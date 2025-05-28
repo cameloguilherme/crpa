@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Teste Lógico</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; max-width: 500px; margin:auto; }
+    label { display:block; margin-top:15px; }
+    input { width:100%; padding:10px; font-size:1em; }
+    button { margin-top:20px; padding:15px; font-size:1em; width:100%; }
+  </style>
+</head>
+<body>
+  <h1>Bem-vindo</h1>
+  <form id="startForm">
+    <label>Nome completo
+      <input type="text" id="name" required />
+    </label>
+    <label>E-mail
+      <input type="email" id="email" required />
+    </label>
+    <button type="submit">Iniciar Teste</button>
+  </form>
+  <script>
+    document.getElementById('startForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      if (!name || !email) return alert('Preencha todos os campos');
+      const res = await fetch('/api/start', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email })
+      });
+      const data = await res.json();
+      if (data.candidateId) {
+        window.location.href = `/quiz.html?c=${data.candidateId}`;
+      } else {
+        alert('Erro ao iniciar teste');
+      }
+    });
+  </script>
+</body>
+</html>

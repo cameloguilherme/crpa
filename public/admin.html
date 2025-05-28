@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding:20px; }
+    table { width:100%; border-collapse: collapse; margin-top:20px; }
+    th, td { border:1px solid #ccc; padding:8px; text-align:left; }
+  </style>
+</head>
+<body>
+  <h1>Painel Admin</h1>
+  <input type="password" id="pass" placeholder="Senha" /> <button id="load">Carregar</button>
+  <button id="csv" disabled>Exportar CSV</button>
+  <table id="table"></table>
+  <script>
+    let password = '';
+    document.getElementById('load').onclick = async () => {
+      password = document.getElementById('pass').value;
+      const res = await fetch(`/api/admin/candidates?password=${password}`);
+      if (!res.ok) return alert('Senha incorreta');
+      const data = await res.json();
+      const table = document.getElementById('table');
+      table.innerHTML = '<tr><th>Nome</th><th>Email</th><th>Score</th><th>Total</th><th>Data</th></tr>' +
+        data.map(r => `<tr><td>${r.name}</td><td>${r.email}</td><td>${r.score||0}</td><td>${r.total||0}</td><td>${r.start_time}</td></tr>`).join('');
+      document.getElementById('csv').disabled = false;
+    };
+    document.getElementById('csv').onclick = () => {
+      window.location = `/api/admin/csv?password=${password}`;
+    };
+  </script>
+</body>
+</html>

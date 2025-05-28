@@ -1,0 +1,11 @@
+{
+  "name": "quiz-server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "dependencies": {
+    "express": "^4.18.2",
+    "sqlite3": "^5.1.6",
+    "csv-stringify": "^6.5.0"
+  }
+}

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quiz</title>
+  <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin:auto; }
+    button { padding:10px 15px; margin-top:10px; font-size:1em; }
+    .option { display:block; margin-top:8px; }
+    .timer { font-weight:bold; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    function Quiz() {
+      const [question, setQuestion] = React.useState(null);
+      const [index, setIndex] = React.useState(0);
+      const [timer, setTimer] = React.useState(60);
+      const candidateId = new URLSearchParams(window.location.search).get('c');
+
+      React.useEffect(() => {
+        fetch(`/api/questions/${index}`).then(r => r.json()).then(q => {
+          if (q.done) window.location.href = `/resultado.html?c=${candidateId}`;
+          else { setQuestion(q); setTimer(60); }
+        });
+      }, [index]);
+
+      React.useEffect(() => {
+        if (timer <= 0) handleAnswer('');
+        const id = setTimeout(() => setTimer(t => t - 1), 1000);
+        return () => clearTimeout(id);
+      }, [timer]);
+
+      function handleAnswer(letter) {
+        fetch('/api/answer', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ candidateId, questionId: question.id, answer: letter })
+        }).then(() => setIndex(i => i + 1));
+      }
+
+      if (!question) return <p>Carregando...</p>;
+      return (
+        <div>
+          <div className="timer">Tempo: {timer}s</div>
+          <h2>{question.text}</h2>
+          {Object.entries(question.options).map(([key, val]) => (
+            <button key={key} className="option" onClick={() => handleAnswer(key)}>{val}</button>
+          ))}
+        </div>
+      );
+    }
+    ReactDOM.render(<Quiz />, document.getElementById('root'));
+  </script>
+</body>
+</html>
