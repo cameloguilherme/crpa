@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Resultado</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding:20px; text-align:center; }
+  </style>
+</head>
+<body>
+  <h1>Resultado</h1>
+  <p id="info">Carregando...</p>
+  <script>
+    const c = new URLSearchParams(window.location.search).get('c');
+    fetch(`/api/result/${c}`).then(r=>r.json()).then(d => {
+      document.getElementById('info').innerText = `Você acertou ${d.score} de ${d.total}`;
+    });
+  </script>
+</body>
+</html>
